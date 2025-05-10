@@ -1,0 +1,12 @@
+/* Font Vazir */
+
+@font-face {
+	font-family: Vazir;
+	src: url('Vazir-Regular-FD.eot');
+	src: url('Vazir-Regular-FD.eot@') format('embedded-opentype'),
+	url('Vazir-Regular-FD.woff') format('woff'),
+	url('Vazir-Regular-FD.ttf') format('truetype');
+	font-weight: normal;
+	}
+
+	

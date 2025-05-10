@@ -1,0 +1,188 @@
+:root {
+    /* Main color palette */
+    --primary-color: #537D5D;      /* Deep forest green */
+    --secondary-color: #73946B;    /* Sage green */
+    --accent-color: #9EBC8A;       /* Soft mint green */
+    --light-color: #FAF6E9;        /* Warm cream */
+    --trust-green: #2E7D32;        /* Trust-building green */
+    --success-green: #4CAF50;      /* Success green */
+    --hover-green: #81C784;        /* Hover state green */
+}
+
+/* Override Bootstrap primary colors */
+.btn-primary {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+
+.btn-primary:hover {
+    background-color: var(--trust-green) !important;
+    border-color: var(--trust-green) !important;
+}
+
+.btn-soft-primary {
+    background-color: rgba(83, 125, 93, 0.1) !important;
+    color: var(--primary-color) !important;
+}
+
+.btn-soft-primary:hover {
+    background-color: var(--primary-color) !important;
+    color: #fff !important;
+}
+
+/* Text colors */
+.text-primary {
+    color: var(--primary-color) !important;
+}
+
+/* Background colors */
+.bg-primary {
+    background-color: var(--primary-color) !important;
+}
+
+.bg-light {
+    background-color: var(--light-color) !important;
+}
+
+/* Navbar customization */
+.navbar-custom {
+    background-color: #fff !important;
+}
+
+.navbar-custom .navbar-nav .nav-link {
+    color: var(--primary-color);
+}
+
+.navbar-custom .navbar-nav .nav-link:hover {
+    color: var(--trust-green);
+}
+
+/* Section backgrounds */
+
+
+.bg-features {
+    background-color: #fff;
+}
+
+.bg-cta {
+    background-color: var(--secondary-color);
+}
+
+/* Card and box styles */
+.services-box {
+    border: 1px solid rgba(83, 125, 93, 0.1);
+    transition: all 0.3s ease;
+}
+
+.services-box:hover {
+    background-color: var(--light-color);
+    border-color: var(--accent-color);
+}
+
+.services-icon {
+    background-color: rgba(83, 125, 93, 0.1);
+    color: var(--primary-color);
+}
+
+/* Pricing boxes */
+.pricing-box {
+    border: 1px solid rgba(83, 125, 93, 0.1);
+}
+
+.pricing-box:hover {
+    border-color: var(--accent-color);
+}
+
+.pricing-badge .badge {
+    background-color: var(--trust-green);
+}
+
+/* Team section */
+.team-box {
+    border: 1px solid rgba(83, 125, 93, 0.1);
+}
+
+.team-badge {
+    background-color: var(--primary-color) !important;
+}
+
+/* Contact form */
+.form-control:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 0.2rem rgba(83, 125, 93, 0.25);
+}
+
+/* Footer customization */
+.bg-footer {
+    background-color: var(--light-color);
+}
+
+.footer-link a {
+    color: var(--primary-color);
+}
+
+.footer-link a:hover {
+    color: var(--trust-green);
+}
+
+/* Social icons */
+.team-social a {
+    color: var(--primary-color);
+}
+
+.team-social a:hover {
+    color: var(--trust-green);
+}
+
+/* Custom animations */
+.animation-2, .animation-3 {
+    background-color: var(--accent-color);
+    opacity: 0.1;
+}
+
+/* Trust indicators */
+.trust-badge {
+    background-color: var(--trust-green);
+    color: #fff;
+}
+
+/* Success states */
+.text-success {
+    color: var(--success-green) !important;
+}
+
+/* Hover states */
+.hover-green:hover {
+    color: var(--hover-green) !important;
+}
+
+/* Custom gradients */
+.gradient-primary {
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+}
+
+/* Custom shadows */
+.custom-shadow {
+    box-shadow: 0 4px 6px rgba(83, 125, 93, 0.1);
+}
+
+/* Custom borders */
+.custom-border {
+    border: 2px solid var(--accent-color);
+}
+
+/* Custom backgrounds for trust elements */
+.trust-section {
+    background-color: rgba(83, 125, 93, 0.05);
+}
+
+/* Custom button styles */
+.btn-trust {
+    background-color: var(--trust-green);
+    color: #fff;
+}
+
+.btn-trust:hover {
+    background-color: var(--success-green);
+    color: #fff;
+} 

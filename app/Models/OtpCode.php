@@ -18,6 +18,8 @@ class OtpCode extends Model
         'used' => 'boolean'
     ];
 
+    protected $table = 'otp_codes';
+
     public function isValid()
     {
         return !$this->used && $this->expires_at->isFuture();

@@ -7,9 +7,9 @@ use App\Http\Controllers\LotteryController;
 use Illuminate\Support\Facades\Route;
 
 // Authentication Routes
-Route::get('login', [AuthController::class, 'showLoginForm'])->name('login');
-Route::post('auth/send-otp', [AuthController::class, 'sendOtp'])->name('auth.send-otp');
-Route::post('auth/verify-otp', [AuthController::class, 'verifyOtp'])->name('auth.verify-otp');
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('auth.phone');
+Route::post('/send-otp', [AuthController::class, 'sendOtp'])->name('auth.send-otp');
+Route::post('/verify-otp', [AuthController::class, 'verifyOtp'])->name('auth.verify-otp');
 Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -25,5 +25,4 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/lottery/winners', [LotteryController::class, 'winners'])->name('lottery.winners');
 });
 
-Auth::routes();
 

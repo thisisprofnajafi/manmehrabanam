@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="fa">
-
 <head>
     <meta charset="utf-8" />
     <title>من مهربانم - ورود</title>
@@ -77,29 +76,10 @@
                                                                     placeholder="شماره موبایل را وارد نمایید" required
                                                                     pattern="09[0-9]{9}" dir="ltr">
                                                                 <small class="text-muted">مثال: 09123456789</small>
+                                                                <div class="invalid-feedback" id="phoneError"></div>
                                                             </div>
                                                             <div class="mt-3">
                                                                 <button type="submit" class="btn btn-primary btn-block">ارسال کد تایید</button>
-                                                            </div>
-                                                        </form>
-
-                                                        <form method="POST" action="{{ route('auth.verify-otp') }}" id="otpForm" style="display: none;">
-                                                            @csrf
-                                                            <input type="hidden" name="phone" id="otpPhone">
-                                                            <div class="form-group">
-                                                                <label for="otp">کد تایید</label>
-                                                                <input type="text" class="form-control" id="otp" name="otp" 
-                                                                    placeholder="کد تایید را وارد نمایید" required
-                                                                    pattern="[0-9]{6}" dir="ltr">
-                                                                <small class="text-muted">کد ۶ رقمی ارسال شده به موبایل شما</small>
-                                                            </div>
-                                                            <div class="mt-3">
-                                                                <button type="submit" class="btn btn-primary btn-block">ورود</button>
-                                                            </div>
-                                                            <div class="mt-3 text-center">
-                                                                <button type="button" class="btn btn-link" id="resendOtp" disabled>
-                                                                    ارسال مجدد کد (60)
-                                                                </button>
                                                             </div>
                                                         </form>
                                                     </div>
@@ -125,48 +105,38 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const phoneForm = document.getElementById('phoneForm');
-            const otpForm = document.getElementById('otpForm');
-            const otpPhone = document.getElementById('otpPhone');
-            const resendOtp = document.getElementById('resendOtp');
-            let countdown = 60;
-            let timer;
+            const phoneInput = document.getElementById('phone');
+            const phoneError = document.getElementById('phoneError');
+
+            // Phone number validation
+            phoneInput.addEventListener('input', function(e) {
+                const phone = e.target.value;
+                const phoneRegex = /^09[0-9]{9}$/;
+                
+                if (!phoneRegex.test(phone)) {
+                    phoneError.textContent = 'شماره موبایل باید با ۰۹ شروع شود و ۱۱ رقم باشد';
+                    phoneInput.classList.add('is-invalid');
+                } else {
+                    phoneError.textContent = '';
+                    phoneInput.classList.remove('is-invalid');
+                }
+            });
 
             phoneForm.addEventListener('submit', function(e) {
                 e.preventDefault();
-                const phone = document.getElementById('phone').value;
-                otpPhone.value = phone;
-                phoneForm.style.display = 'none';
-                otpForm.style.display = 'block';
-                startCountdown();
-            });
+                const phone = phoneInput.value;
+                const phoneRegex = /^09[0-9]{9}$/;
 
-            function startCountdown() {
-                resendOtp.disabled = true;
-                countdown = 60;
-                updateResendButton();
-                
-                timer = setInterval(function() {
-                    countdown--;
-                    updateResendButton();
-                    
-                    if (countdown <= 0) {
-                        clearInterval(timer);
-                        resendOtp.disabled = false;
-                        resendOtp.textContent = 'ارسال مجدد کد';
-                    }
-                }, 1000);
-            }
-
-            function updateResendButton() {
-                resendOtp.textContent = `ارسال مجدد کد (${countdown})`;
-            }
-
-            resendOtp.addEventListener('click', function() {
-                if (!resendOtp.disabled) {
-                    phoneForm.submit();
+                if (!phoneRegex.test(phone)) {
+                    phoneError.textContent = 'شماره موبایل باید با ۰۹ شروع شود و ۱۱ رقم باشد';
+                    phoneInput.classList.add('is-invalid');
+                    return;
                 }
+
+                // Submit the form
+                this.submit();
             });
         });
     </script>
 </body>
-</html>
+</html> 

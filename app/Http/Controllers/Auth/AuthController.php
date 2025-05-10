@@ -14,48 +14,85 @@ class AuthController extends Controller
 {
     public function showLoginForm()
     {
-        return view('auth.login');
+        return view('auth.phone');
     }
 
     public function sendOtp(Request $request)
     {
-        $request->validate([
-            'phone' => 'required|regex:/^09[0-9]{9}$/'
-        ]);
+        try {
+            \Log::info('Starting OTP send process for phone: ' . $request->phone);
+            
+            $request->validate([
+                'phone' => 'required|string|size:11'
+            ]);
 
-        $phone = $request->phone;
-        $otp = '123456'; // For development, in production use: str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-        
-        // Invalidate any existing OTP codes for this phone
-        OtpCode::where('phone', $phone)
-            ->where('used', false)
-            ->where('expires_at', '>', now())
-            ->update(['used' => true]);
+            $phone = $request->phone;
+            $otp = '123456'; // For development, in production use: str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+            
+            \Log::info('Invalidating existing OTP codes for phone: ' . $phone);
+            
+            // Invalidate any existing OTP codes for this phone
+            $invalidated = OtpCode::where('phone', $phone)
+                ->where('used', false)
+                ->where('expires_at', '>', now())
+                ->update(['used' => true]);
+            
+            \Log::info('Invalidated existing OTP codes: ' . $invalidated);
 
-        // Create new OTP code
-        OtpCode::create([
-            'phone' => $phone,
-            'code' => Hash::make($otp),
-            'expires_at' => now()->addMinutes(2),
-            'used' => false
-        ]);
+            \Log::info('Creating new OTP code with data:', [
+                'phone' => $phone,
+                'code' => $otp,
+                'expires_at' => now()->addMinutes(2)
+            ]);
+            
+            // Create new OTP code
+            $otpCode = new OtpCode([
+                'phone' => $phone,
+                'code' => Hash::make($otp),
+                'expires_at' => now()->addMinutes(2),
+                'used' => false
+            ]);
 
-        // TODO: Integrate with your SMS service provider
-        // For development, we'll just log the OTP
-        \Log::info("OTP for {$phone}: {$otp}");
+            $saved = $otpCode->save();
+            
+            \Log::info('OTP code save result: ' . ($saved ? 'success' : 'failed'));
 
-        return back()->with('success', 'کد تایید به شماره موبایل شما ارسال شد.');
+            if (!$saved) {
+                \Log::error('Failed to create OTP code for phone: ' . $phone);
+                return back()->with('error', 'خطا در ارسال کد تایید. لطفا دوباره تلاش کنید.');
+            }
+
+            \Log::info('OTP code created successfully', [
+                'phone' => $phone,
+                'otp' => $otp,
+                'expires_at' => $otpCode->expires_at,
+                'id' => $otpCode->id
+            ]);
+
+            // Check if user exists
+            $isNewUser = !User::where('phone', $phone)->exists();
+
+            return view('auth.verify', compact('phone', 'isNewUser'));
+        } catch (\Exception $e) {
+            \Log::error('Error in sendOtp: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'phone' => $request->phone ?? 'not provided'
+            ]);
+            return back()->with('error', 'خطا در ارسال کد تایید. لطفا دوباره تلاش کنید.');
+        }
     }
 
     public function verifyOtp(Request $request)
     {
         $request->validate([
-            'phone' => 'required|regex:/^09[0-9]{9}$/',
-            'otp' => 'required|digits:6'
+            'phone' => 'required|string|size:11',
+            'otp' => 'required|digits:6',
+            'name' => 'required|string|min:2'
         ]);
 
         $phone = $request->phone;
         $otp = $request->otp;
+        $name = $request->name;
 
         // Find the latest valid OTP code
         $otpCode = OtpCode::where('phone', $phone)
@@ -64,21 +101,31 @@ class AuthController extends Controller
             ->latest()
             ->first();
 
-        if (!$otpCode || !Hash::check($otp, $otpCode->code)) {
+        if (!$otpCode) {
+            return back()->with('error', 'کد تایید نامعتبر است.');
+        }
+
+        if (!Hash::check($otp, $otpCode->code)) {
             return back()->with('error', 'کد تایید نامعتبر است.');
         }
 
         // Mark OTP as used
         $otpCode->update(['used' => true]);
 
-        // Find or create user
-        $user = User::firstOrCreate(
-            ['phone' => $phone],
-            [
-                'name' => 'کاربر ' . substr($phone, -4),
-                'password' => Hash::make(Str::random(16))
-            ]
-        );
+        // Check if user exists
+        $existingUser = User::where('phone', $phone)->first();
+        
+        if ($existingUser) {
+            // Update existing user's name
+            $existingUser->update(['name' => $name]);
+            $user = $existingUser;
+        } else {
+            // Create new user with provided name
+            $user = User::create([
+                'phone' => $phone,
+                'name' => $name,
+            ]);
+        }
 
         // Login user
         Auth::login($user);
@@ -92,5 +139,11 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect()->route('login');
+    }
+
+    public function checkUser($phone)
+    {
+        $user = User::where('phone', $phone)->first();
+        return response()->json(['exists' => $user !== null]);
     }
 } 

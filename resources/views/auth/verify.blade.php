@@ -78,13 +78,15 @@
                                                                     pattern="[0-9]{6}" dir="ltr">
                                                                 <small class="text-muted">کد ۶ رقمی ارسال شده به موبایل شما</small>
                                                             </div>
-                                                            <div class="form-group" id="nameField" style="display: {{ $isNewUser ? 'block' : 'none' }};">
+                                                            @if($isNewUser)
+                                                            <div class="form-group" id="nameField">
                                                                 <label for="name">نام و نام خانوادگی</label>
                                                                 <input type="text" class="form-control" id="name" name="name" 
                                                                     placeholder="نام و نام خانوادگی خود را وارد نمایید" 
                                                                     {{ $isNewUser ? 'required' : '' }}>
                                                                 <small class="text-muted">برای کاربران جدید</small>
                                                             </div>
+                                                            @endif
                                                             <div class="mt-3">
                                                                 <button type="submit" class="btn btn-primary btn-block">ورود</button>
                                                             </div>

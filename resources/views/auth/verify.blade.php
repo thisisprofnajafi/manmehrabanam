@@ -89,9 +89,13 @@
                                                                 <button type="submit" class="btn btn-primary btn-block">ورود</button>
                                                             </div>
                                                             <div class="mt-3 text-center">
-                                                                <button type="button" class="btn btn-link" id="resendOtp" disabled>
-                                                                    ارسال مجدد کد (60)
-                                                                </button>
+                                                                <form method="POST" action="{{ route('auth.send-otp') }}" id="resendOtpForm" style="display: inline;">
+                                                                    @csrf
+                                                                    <input type="hidden" name="phone" value="{{ $phone }}">
+                                                                    <button type="submit" class="btn btn-link" id="resendOtp" disabled>
+                                                                        ارسال مجدد کد (60)
+                                                                    </button>
+                                                                </form>
                                                             </div>
                                                         </form>
                                                     </div>
@@ -140,12 +144,6 @@
             function updateResendButton() {
                 resendOtp.textContent = `ارسال مجدد کد (${countdown})`;
             }
-
-            resendOtp.addEventListener('click', function() {
-                if (!resendOtp.disabled) {
-                    window.location.href = "{{ route('auth.phone') }}";
-                }
-            });
 
             // Start countdown when page loads
             startCountdown();

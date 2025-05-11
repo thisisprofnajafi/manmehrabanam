@@ -9,9 +9,18 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use App\Services\SmsService;
+use App\Notifications\SendOtpToUser;
 
 class AuthController extends Controller
 {
+    protected $smsService;
+
+    public function __construct(SmsService $smsService)
+    {
+        $this->smsService = $smsService;
+    }
+
     public function showLoginForm()
     {
         return view('auth.phone');
@@ -27,7 +36,7 @@ class AuthController extends Controller
             ]);
 
             $phone = $request->phone;
-            $otp = '123456'; // For development, in production use: str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+            $otp = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
             
             \Log::info('Invalidating existing OTP codes for phone: ' . $phone);
             
@@ -62,7 +71,14 @@ class AuthController extends Controller
                 return back()->with('error', 'خطا در ارسال کد تایید. لطفا دوباره تلاش کنید.');
             }
 
-            \Log::info('OTP code created successfully', [
+            // Create a temporary user for notification
+            $user = new User();
+            $user->phone = $phone;
+
+            // Send OTP via notification
+            $user->notify(new SendOtpToUser($otp));
+
+            \Log::info('OTP code created and SMS sent successfully', [
                 'phone' => $phone,
                 'otp' => $otp,
                 'expires_at' => $otpCode->expires_at,
@@ -130,7 +146,7 @@ class AuthController extends Controller
         // Login user
         Auth::login($user);
 
-        return redirect()->intended(route('home'));
+        return redirect()->intended(route('horoscope.index'));
     }
 
     public function logout(Request $request)

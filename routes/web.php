@@ -7,7 +7,7 @@ use App\Http\Controllers\LotteryController;
 use Illuminate\Support\Facades\Route;
 
 // Authentication Routes
-Route::get('/login', [AuthController::class, 'showLoginForm'])->name('auth.phone');
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/send-otp', [AuthController::class, 'sendOtp'])->name('auth.send-otp');
 Route::post('/verify-otp', [AuthController::class, 'verifyOtp'])->name('auth.verify-otp');
 Route::post('logout', [AuthController::class, 'logout'])->name('logout');

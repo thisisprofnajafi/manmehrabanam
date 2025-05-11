@@ -63,3 +63,16 @@ jobs:
           username: git@manmehrabanam.com
           password: Prof48017421@#
           server-dir: /
+      - name: Notify Telegram
+        env:
+          TELEGRAM_BOT_TOKEN: 7730755504:AAHzmWsNH89aXQ90TBl4248_XJHQGelx9a0
+          TELEGRAM_CHAT_ID: -4656657440
+          GITHUB_ACTOR: ${{ github.actor }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+        run: |
+          FORMATTED_COMMIT_MESSAGE=$(echo "${COMMIT_MESSAGE}" | sed 's/$/\\n/' | sed ':a;N;$!ba;s/\n/\\n/g')
+          MESSAGE=$(echo -e "😎 <b>آپدیت وبسایت با موفقیت انجام شد</b> 😎\n\n👌 <b>Status:</b> تغییرات جدید اعمال شد\n\n👤 <b>توسط:</b> ${GITHUB_ACTOR}\n <blockquote>${FORMATTED_COMMIT_MESSAGE}</blockquote>")
+          curl -s -X POST https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage \
+            -d chat_id=${TELEGRAM_CHAT_ID} \
+            -d text="${MESSAGE}" \
+            -d parse_mode="HTML"
